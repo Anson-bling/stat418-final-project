@@ -75,8 +75,9 @@ app <- shinyApp(ui = fluidPage(titlePanel('Predicting Winning Rate for MLB Teams
                                  sidebarPanel(h3("Introduction"),
                                               p("This shiny app is used to predict the winning rate of a 
                                               certain team in a baseball game from some features of this 
-                                              team and the players. The model it emplyed was built based 
-                                              on data collected on some MLB teams.")),
+                                              team and the players. The multiple linear regression model 
+                                              it employed was built based on data collected on some MLB 
+                                              teams.")),
                                  mainPanel(img(src = "MLB.png", height = 200, width = 300))),
                                
                                # create inputs for each variable in the model
