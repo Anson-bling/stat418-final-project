@@ -1,0 +1,83 @@
+---
+title: "Final Project"
+author: "Haorui Zhang"
+date: "5/1/2019"
+output: pdf_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(rvest)
+library(dplyr)
+library(stringr)
+```
+
+# Part I: Data Web Scraping
+```{r}
+teampage <- read_html("http://www.baseball-reference.com/teams/")
+fran_name <- teampage %>% html_nodes(".left") %>% html_text()
+fran_name <- fran_name[2:31]
+s <- html_session("http://www.baseball-reference.com/teams/")
+baseball <- data.frame()
+```
+
+```{r message=FALSE}
+for(i in 1:length(fran_name)) {  #length(fran_name)
+  hist <- s %>% follow_link(fran_name[i]) %>% read_html()
+  sub_tb <- as.data.frame(hist %>% html_nodes("#franchise_years") %>% html_table())
+  sub_tb['Team'] <- fran_name[i]
+  baseball <- rbind(baseball, sub_tb)
+}
+```
+
+```{r}
+all.equal(charToRaw(baseball$Tm[1]), charToRaw("Arizona Diamondbacks"))
+```
+
+```{r}
+char_cols <- which(lapply(baseball, typeof) == "character")
+
+for(i in char_cols){
+    baseball[[i]] <- str_conv(baseball[[i]], "UTF-8")
+    baseball[[i]] <- str_replace_all(baseball[[i]],"\\s"," ")
+}
+
+all.equal(charToRaw(baseball$Tm[1]), charToRaw("Arizona Diamondbacks"))
+```
+
+```{r}
+dim(baseball)
+```
+
+# Part II: Exploratory Data Analysis
+```{r}
+plot(baseball$R, baseball$W.L.)
+plot(baseball$RA, baseball$W.L.)
+
+hist(baseball$BatAge, main = "Histogram of Batters' Average Age")
+hist(baseball$PAge, main = "Histogram of Pitchers' Average Age")
+```
+
+# Part III: Feature Engineering
+```{r}
+# Use data from 1969-2018
+baseball <- baseball %>% filter(Year %in% 1969:2018)
+baseball <- subset(baseball, select = -Tm)
+baseball$GB[which(baseball$GB == "--")] <- 0
+baseball$GB <- as.integer(baseball$GB)
+# Categorize attendance to indicate popularity
+baseball$Attendance <- as.numeric(gsub("," ,"", baseball$Attendance))
+baseball$Popularity <- cut(baseball$Attendance, breaks=c(-Inf, 1000000, 2000000, 3000000, Inf),
+                           labels=c("Very unpopular", "Unpopular", "Popular", "Very popular"))
+baseball$Lg <- as.factor(baseball$Lg)
+baseball$Popularity <- as.factor(baseball$Popularity)
+```
+
+# Part IV: Building Linear Models
+```{r}
+# Start with a full model
+m1 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + BatAge + PAge + X.Bat + X.P, data = baseball)
+summary(m1)
+# Remove insignificant predictors
+m2 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = baseball)
+summary(m2)
+```
