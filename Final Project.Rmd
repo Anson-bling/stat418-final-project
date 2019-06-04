@@ -48,7 +48,16 @@ all.equal(charToRaw(baseball$Tm[1]), charToRaw("Arizona Diamondbacks"))
 dim(baseball)
 ```
 
-# Part II: Exploratory Data Analysis
+# Part II: Data Cleaning
+```{r}
+# Use data from 1969-2018 because data before 1969 have different leagues from now
+baseball <- baseball %>% filter(Year %in% 1969:2018)
+baseball <- subset(baseball, select = -Tm)
+baseball$GB[which(baseball$GB == "--")] <- 0
+baseball$GB <- as.integer(baseball$GB)
+```
+
+# Part III: Exploratory Data Analysis
 ```{r}
 plot(baseball$R, baseball$W.L.)
 plot(baseball$RA, baseball$W.L.)
@@ -57,27 +66,35 @@ hist(baseball$BatAge, main = "Histogram of Batters' Average Age")
 hist(baseball$PAge, main = "Histogram of Pitchers' Average Age")
 ```
 
-# Part III: Feature Engineering
+# Part IV: Feature Engineering
 ```{r}
-# Use data from 1969-2018
-baseball <- baseball %>% filter(Year %in% 1969:2018)
-baseball <- subset(baseball, select = -Tm)
-baseball$GB[which(baseball$GB == "--")] <- 0
-baseball$GB <- as.integer(baseball$GB)
 # Categorize attendance to indicate popularity
 baseball$Attendance <- as.numeric(gsub("," ,"", baseball$Attendance))
+# Draw histogram to decide cutoff points
+hist(baseball$Attendance)
+
 baseball$Popularity <- cut(baseball$Attendance, breaks=c(-Inf, 1000000, 2000000, 3000000, Inf),
                            labels=c("Very unpopular", "Unpopular", "Popular", "Very popular"))
 baseball$Lg <- as.factor(baseball$Lg)
 baseball$Popularity <- as.factor(baseball$Popularity)
+baseball$W.L. <- baseball$W.L.*100
 ```
 
-# Part IV: Building Linear Models
+# Part V: Building Linear Models
 ```{r}
+set.seed(418)
+obs <- sample(1:nrow(baseball), nrow(baseball)*0.7)
+train <- baseball[obs,]
+test <- baseball[-obs,]
+
 # Start with a full model
-m1 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + BatAge + PAge + X.Bat + X.P, data = baseball)
+m1 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + BatAge + PAge + X.Bat + X.P, data = train)
 summary(m1)
+
 # Remove insignificant predictors
-m2 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = baseball)
+m2 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = train)
 summary(m2)
+pred <- predict(m2, subset(test, select = -W.L.))
+cor(pred, test$W.L.)
 ```
+
