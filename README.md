@@ -22,24 +22,24 @@ There are two ways to access this app.
 
 `R -e "shiny::runApp('app/')"`
 
-**Copy the outputting link to any browser to run this app.** 
+**Copy the outputting link to any browser to run this app.** <br>
 
-**2. Simply access this Shiny app at https://mysticcc.shinyapps.io/Predicting_Winning_Rate_for_MLB_Teams/**
+**2. Simply access this Shiny app at https://mysticcc.shinyapps.io/Predicting_Winning_Rate_for_MLB_Teams/** <br>
 
-After opening this app, you can adjust the sliders and radio buttons to provide desired inputs for league, games back of league leader, runs scored, runs allowed, popularity based on tickets sold in home games, pitchers' average age, and number of batters used in game to get a prediction of the winning rate (in percentage) of your desired team. 
+After opening this app, you can adjust the sliders and radio buttons to input desired values for league, games back of league leader, runs scored, runs allowed, popularity based on tickets sold in home games, pitchers' average age, and number of batters used in game to get a prediction of the winning rate (in percentage) of your desired team. 
 
 ## Data Cleaning and Exploratory Data Analysis
-We first need to clean our data. Before 1969, the 30 teams in MLB were divided into leagues in a different way from present. To make our analysis more consistent, we will only use data from 1969 to 2018. The variable GB represents the number of games back of league leader. It thus has NAs for those leader teams. We need to replace these NAs with 0s.
+We first need to clean our data. Before 1969, the 30 teams in MLB were divided into leagues in a different way from present. To make our analysis more consistent, we will only use data from 1969 to 2018. The variable GB represents the number of games back of league leader. It thus has NA's for those leader teams. We need to replace these NA's with 0's.
 
 Then we can proceed with some exploratory data analysis.
 
-The scatterplot of runs scored and runs allowed
+The scatterplot of runs scored and runs allowed.
 ![](./imgs/scatterplot.png)
 
-We can see that there is a positive relationship between runs scored and the winning rate and a negative relationship between runs allowed and the winning rate, so we may consider adding these variables into our model.
+We can see that there is a positive relationship between runs scored and the winning rate and a negative relationship between runs allowed and the winning rate, so we may consider adding these two variables into our model.
 
 Also, we note that the batters' average age as well as the pitchers' average age seem to be normally distributed. 
-![](./imgs/scatterplot.png)
+![](./imgs/histogram.png)
 
 Thus we can add these two variables into our model without doing further transformations.
 
@@ -57,10 +57,10 @@ Also, we notice that the variable Attendance which is the number of tickets sold
 We can now fit a multiple linear regression model. We start with the full model and then remove the insignificant predictors to get our final model. The result of the final model are shown in the table below.
 
 <p align="center">
-  <img src="./imgs/table.png" />
+  <img src="./imgs/table.png" width="500"/>
 </p>
 
 This model explains more than 91% of the variations in the winning rate of these teams. Through cross validation, we can see that the correlation between the predicted winning rate and the true winning rate is about 0.95, which is quite high.
 
 ## Conclusions
-Overall, our multiplt linear regression model seems to be a good fit for our data. One major limitation to this analysis is that it only employs a multiple linear regression model. To further improve the model performance, we may try some other modeling approaches such as random forest, xgboost, etc. Besides, there might exist some multicollinearity. We may also need some further exploration to avoid this problem and thus to make better predictions. 
+Overall, our multiple linear regression model seems to be a good fit for our data. One major limitation to this analysis is that it only employs a multiple linear regression model. To further improve the model performance, we may try some other modeling approaches such as random forest, xgboost, etc. Besides, there might be some multicollinearity between some of the predictors. We may also need some further explorations to avoid this problem and thus to make better predictions. 
