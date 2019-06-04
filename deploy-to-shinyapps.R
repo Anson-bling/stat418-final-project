@@ -5,7 +5,7 @@
 #install.packages('rsconnect')
 
 # Name is account name, get both your authentication token and secret in your account
-rsconnect::setAccountInfo(name = 'mtsticcc',
+rsconnect::setAccountInfo(name = 'mysticcc',
                           token = '<hide>',
                           secret = '<SECRET>')
 
