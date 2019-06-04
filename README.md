@@ -22,9 +22,13 @@ There are two ways to access this app.
 
 `R -e "shiny::runApp('app/')"`
 
-**Copy the outputting link to any browser to run this app.** <br>
+**Copy the outputting link to any browser to run this app.** 
 
-**2. Simply access this Shiny app at https://mysticcc.shinyapps.io/Predicting_Winning_Rate_for_MLB_Teams/** <br>
+<br>
+
+**2. Simply access this Shiny app at https://mysticcc.shinyapps.io/Predicting_Winning_Rate_for_MLB_Teams/** 
+
+<br>
 
 After opening this app, you can adjust the sliders and radio buttons to input desired values for league, games back of league leader, runs scored, runs allowed, popularity based on tickets sold in home games, pitchers' average age, and number of batters used in game to get a prediction of the winning rate (in percentage) of your desired team. 
 
@@ -33,12 +37,12 @@ We first need to clean our data. Before 1969, the 30 teams in MLB were divided i
 
 Then we can proceed with some exploratory data analysis.
 
-The scatterplot of runs scored and runs allowed.
+The scatterplot of runs scored and runs allowed. <br>
 ![](./imgs/scatterplot.png)
 
 We can see that there is a positive relationship between runs scored and the winning rate and a negative relationship between runs allowed and the winning rate, so we may consider adding these two variables into our model.
 
-Also, we note that the batters' average age as well as the pitchers' average age seem to be normally distributed. 
+Also, we note that the batters' average age as well as the pitchers' average age seem to be normally distributed. <br>
 ![](./imgs/histogram.png)
 
 Thus we can add these two variables into our model without doing further transformations.
@@ -57,7 +61,7 @@ Also, we notice that the variable Attendance which is the number of tickets sold
 We can now fit a multiple linear regression model. We start with the full model and then remove the insignificant predictors to get our final model. The result of the final model are shown in the table below.
 
 <p align="center">
-  <img src="./imgs/table.png" width="500"/>
+  <img src="./imgs/table.png" width="600"/>
 </p>
 
 This model explains more than 91% of the variations in the winning rate of these teams. Through cross validation, we can see that the correlation between the predicted winning rate and the true winning rate is about 0.95, which is quite high.
