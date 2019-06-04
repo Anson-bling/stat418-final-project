@@ -41,16 +41,26 @@ baseball$Popularity <- cut(baseball$Attendance, breaks=c(-Inf, 1000000, 2000000,
                            labels=c("Very unpopular", "Unpopular", "Popular", "Very popular"))
 baseball$Lg <- as.factor(baseball$Lg)
 baseball$Popularity <- as.factor(baseball$Popularity)
+baseball$W.L. <- baseball$W.L.*100
 
-# Linear model with all predictors
-m1 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + BatAge + PAge + X.Bat + X.P, data = baseball)
+# Split into traning data and testing data
+set.seed(418)
+obs <- sample(1:nrow(baseball), nrow(baseball)*0.7)
+train <- baseball[obs,]
+test <- baseball[-obs,]
+
+# Start with a full model
+m1 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + BatAge + PAge + X.Bat + X.P, data = train)
 summary(m1)
-# Removing insignificant predictors
-m2 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = baseball)
+
+# Remove insignificant predictors
+m2 <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = train)
 summary(m2)
+pred <- predict(m2, subset(test, select = -W.L.))
+cor(pred, test$W.L.)
 
 # Run our regression
-fit <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = baseball)
+fit <- lm(W.L. ~ Lg + GB + R + RA + Popularity + PAge + X.Bat, data = train)
 
 preds <- function(fit, Lg, GB, R, RA, Popularity, PAge, X.Bat){
   # get the predicted win-loss percentage from new data
@@ -114,10 +124,10 @@ app <- shinyApp(ui = fluidPage(titlePanel('Predicting Winning Rate for MLB Teams
                                            min = floor(min(baseball$X.Bat)), 
                                            max = ceiling(max(baseball$X.Bat)),
                                            value = floor(mean(baseball$X.Bat))),
-                               
+                             
                                sidebarLayout(
                                  position = 'right',
-                                 sidebarPanel(h4("Predicted Winning Rate: ", textOutput('prediction'))),
+                                 sidebarPanel(h4("Predicted Winning Rate (in percentage): ", textOutput('prediction'))),
                                  mainPanel = "  ")),
                 
                 
